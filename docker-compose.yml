@@ -1,0 +1,9 @@
+services:
+  django_local:
+    build: .
+    container_name: django_local_mysql
+    ports:
+      - "8001:8001"
+    volumes:
+      - .:/app
+    restart: always

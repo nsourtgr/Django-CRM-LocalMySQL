@@ -1,0 +1,49 @@
+<h1>CRM Live Search</h1>
+<input type="text" id="search-box" placeholder="Search by Name, Email, Phone, City...">
+<table border="1" id="results-table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>City</th>
+            <th>Address</th>
+            <th>State</th>
+            <th>Zipcode</th>
+        </tr>
+    </thead>
+    <tbody id="results"></tbody>
+</table>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#search-box').on('keyup', function() {
+        var query = $(this).val();
+        $.ajax({
+            url: "/records/search/ajax/",
+            data: {'q': query},
+            dataType: 'json',
+            success: function(data) {
+                var rows = '';
+                if(data.data.length > 0){
+                    data.data.forEach(function(r) {
+                        rows += '<tr>'+
+                            '<td>' + r.first_name + ' ' + r.last_name + '</td>'+
+                            '<td>' + r.email + '</td>'+
+                            '<td>' + r.phone + '</td>'+
+                            '<td>' + r.city + '</td>'+
+                            '<td>' + r.address + '</td>'+
+                            '<td>' + r.state + '</td>'+
+                            '<td>' + r.zipcode + '</td>'+
+                        '</tr>';
+                    });
+                } else {
+                    rows = '<tr><td colspan="7">No results found.</td></tr>';
+                }
+                $('#results').html(rows);
+            }
+        });
+    });
+});
+</script>
