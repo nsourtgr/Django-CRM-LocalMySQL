@@ -5,6 +5,43 @@ from django.http import JsonResponse
 from django.db import models
 from .forms import SignUpForm, AddRecordForm
 from .models import Record
+from django.http import HttpResponse
+from openpyxl import Workbook
+from .models import Record
+
+def export_excel(request):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Records"
+
+    # Header
+    ws.append([
+        "First Name","Last Name","Email","Phone",
+        "Address","City","State","Zipcode","Created"
+    ])
+
+    records = Record.objects.all()
+
+    for r in records:
+        ws.append([
+            r.first_name,
+            r.last_name,
+            r.email,
+            r.phone,
+            r.address,
+            r.city,
+            r.state,
+            r.zipcode,
+            r.created_at.strftime("%d-%m-%Y %H:%M")
+        ])
+
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response["Content-Disposition"] = "attachment; filename=crm_records.xlsx"
+
+    wb.save(response)
+    return response
 
 def home(request):
     if request.user.is_authenticated:

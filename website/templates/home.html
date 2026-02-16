@@ -9,7 +9,16 @@
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
 <h2>Customer Records</h2>
-<a href="{% url 'add_record' %}" class="btn btn-success mb-2">Add New Record</a>
+
+<a href="{% url 'add_record' %}" class="btn btn-success mb-2">
+    Add New Record
+</a>
+
+<a href="{% url 'export_excel' %}" class="btn btn-primary mb-2">
+    Export Excel
+</a>
+
+<br><br>
 
 <table id="recordsTable" class="display stripe hover">
     <thead>

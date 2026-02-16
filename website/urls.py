@@ -12,4 +12,6 @@ urlpatterns = [
     path('record/<int:pk>/', views.customer_record, name='record'),
 
     path('records/search/ajax/', views.record_search_ajax, name='record_search_ajax'),
+    path('export/excel/', views.export_excel, name='export_excel'),
+
 ]
