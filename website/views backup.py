@@ -1,6 +1,5 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponse
 from django.db.models import Q
@@ -14,7 +13,6 @@ from .models import Record
 
 # ===================== EXPORT EXCEL =====================
 
-@login_required(login_url='home')
 def export_excel(request):
     wb = Workbook()
     ws = wb.active
@@ -45,6 +43,7 @@ def export_excel(request):
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
     response["Content-Disposition"] = "attachment; filename=crm_records.xlsx"
+
     wb.save(response)
     return response
 
@@ -93,36 +92,52 @@ def register_user(request):
 
 # ===================== CRUD =====================
 
-@login_required(login_url='home')
 def customer_record(request, pk):
-    record = get_object_or_404(Record, id=pk)
+    if not request.user.is_authenticated:
+        messages.error(request, "Login required")
+        return redirect('home')
+
+    record = Record.objects.get(id=pk)
     return render(request, 'record.html', {'customer_record': record})
 
 
-@login_required(login_url='home')
 def add_record(request):
+    if not request.user.is_authenticated:
+        messages.error(request, "Login required")
+        return redirect('home')
+
     form = AddRecordForm(request.POST or None)
+
     if request.method == 'POST' and form.is_valid():
         form.save()
         messages.success(request, "Record added!")
         return redirect('home')
+
     return render(request, 'add_record.html', {'form': form})
 
 
-@login_required(login_url='home')
 def update_record(request, pk):
-    record = get_object_or_404(Record, id=pk)
+    if not request.user.is_authenticated:
+        messages.error(request, "Login required")
+        return redirect('home')
+
+    record = Record.objects.get(id=pk)
     form = AddRecordForm(request.POST or None, instance=record)
+
     if request.method == 'POST' and form.is_valid():
         form.save()
         messages.success(request, "Record updated!")
         return redirect('home')
+
     return render(request, 'update_record.html', {'form': form})
 
 
-@login_required(login_url='home')
 def delete_record(request, pk):
-    record = get_object_or_404(Record, id=pk)
+    if not request.user.is_authenticated:
+        messages.error(request, "Login required")
+        return redirect('home')
+
+    record = Record.objects.get(id=pk)
     record.delete()
     messages.success(request, "Record deleted!")
     return redirect('home')
@@ -130,7 +145,6 @@ def delete_record(request, pk):
 
 # ===================== AJAX SEARCH (DataTables) =====================
 
-@login_required(login_url='home')
 def record_search_ajax(request):
     q = request.GET.get('q', '')
 
@@ -153,7 +167,7 @@ def record_search_ajax(request):
                 "last_name": r.last_name,
                 "email": r.email,
                 "phone": r.phone,
-                "work_phone": r.work_phone,
+                "work_phone": r.work_phone,   # must match DataTables column
                 "address": r.address,
                 "city": r.city,
                 "state": r.state,

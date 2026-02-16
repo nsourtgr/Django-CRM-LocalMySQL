@@ -27,6 +27,7 @@
             <th>Last Name</th>
             <th>Email</th>
             <th>Phone</th>
+            <th>Work Phone</th>
             <th>Address</th>
             <th>City</th>
             <th>State</th>
@@ -44,13 +45,14 @@ $(document).ready(function() {
         ajax: {
             url: "{% url 'record_search_ajax' %}",
             type: "GET",
-            dataSrc: "records"
+            dataSrc: "data"
         },
         columns: [
             { data: "first_name" },
             { data: "last_name" },
             { data: "email" },
             { data: "phone" },
+            { data: "work_phone" },
             { data: "address" },
             { data: "city" },
             { data: "state" },
