@@ -1,9 +1,20 @@
 services:
-  django_local:
+  django:
     build: .
-    container_name: django_local_mysql
+    container_name: dcrm_web
     ports:
       - "8001:8001"
     volumes:
       - .:/app
-    restart: always
+    environment:
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - SECRET_KEY=${SECRET_KEY}
+      - DEBUG=${DEBUG}
+    command: >
+      sh -c "python manage.py makemigrations &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8001"
